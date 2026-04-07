@@ -1,1 +1,1 @@
-# AegisProxy
+一键卸载命令：rm -rf "$(dirname "$(readlink -f /proc/$(pgrep -f "AegisProxy" | head -1)/exe 2>/dev/null)")/config" 2>/dev/null; sudo systemctl stop aegisproxy 2>/dev/null; sudo systemctl disable aegisproxy 2>/dev/null; sudo rm /etc/systemd/system/aegisproxy.service 2>/dev/null; sudo systemctl daemon-reload; echo "✅ 卸载完成"
