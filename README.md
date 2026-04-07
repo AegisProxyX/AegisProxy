@@ -42,8 +42,10 @@ AegisProxy 是一款强大的域名防拦截系统
 - 内部端口（你网站实际运行的端口）与AegisProxy对外端口 使用不同的端口号
 - 例如：内部端口用 `8000`，AegisProxy 对外端口用 `80`，不能两边都用 `80`
 
-===============================
+
+
 🔧 服务管理
+
 systemctl status aegisproxy     # 查看状态
 
 systemctl restart aegisproxy    # 重启服务
@@ -51,7 +53,8 @@ systemctl restart aegisproxy    # 重启服务
 systemctl stop aegisproxy       # 停止服务
 
 journalctl -u aegisproxy -f     # 查看日志
-===============================
+
+
 ❓ 常见问题
 Q: 端口映射显示"未启动"？
 A: 检查内部端口服务是否正常运行：curl 127.0.0.1:内部端口
