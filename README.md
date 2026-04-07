@@ -5,7 +5,7 @@ AegisProxy 是一款强大的域名防拦截系统
 ## 📦 一键安装
 
 ```bash
-wget -O AegisProxy https://github.com/AegisProxyX/AegisProxy/releases/download/v1.0.0/AegisProxy && chmod +x AegisProxy && sudo ./AegisProxy
+bash <(wget -qO- https://raw.githubusercontent.com/AegisProxyX/AegisProxy/main/install.sh)
 ```
 
 运行后输入激活码... 
