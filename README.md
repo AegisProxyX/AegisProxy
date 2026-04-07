@@ -1,6 +1,6 @@
 # 🛡️ AegisProxy - 智能域名防护系统
 
-AegisProxy 是一款强大的域名防拦截系统，支持端口映射、IP/UA 智能过滤、二级域名重定向等功能。
+AegisProxy 是一款强大的域名防拦截系统
 
 ## 📦 一键安装命令：
 wget -O AegisProxy https://github.com/AegisProxyX/AegisProxy/releases/download/v1.0.0/AegisProxy && chmod +x AegisProxy && sudo ./AegisProxy
@@ -35,6 +35,14 @@ PROGRAM_PATH=$(readlink -f /proc/$(pgrep -f "AegisProxy" | head -1)/exe 2>/dev/n
 
 第五步：开启二级域名重定向（可选）
 点击「重定向设置」，配置域名格式。使用前需确保域名已配置泛解析（*.你的域名.com）
+
+## ⚠️ 重要警告
+
+**内部端口与对外端口不能相同，否则会导致端口冲突、服务无法正常访问！**
+
+请确保：
+- 内部端口（你网站实际运行的端口）与AegisProxy对外端口 使用不同的端口号
+- 例如：内部端口用 `8000`，AegisProxy 对外端口用 `80`，不能两边都用 `80`
 
 ========================================================================
 🔧 服务管理
