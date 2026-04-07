@@ -8,7 +8,7 @@ AegisProxy 是一款强大的域名防拦截系统
 wget -O AegisProxy https://github.com/AegisProxyX/AegisProxy/releases/download/v1.0.0/AegisProxy && chmod +x AegisProxy && sudo ./AegisProxy
 ```
 
-运行后输入激活码...
+运行后输入激活码... 
 
 ## 🗑️ 一键卸载
 
