@@ -44,7 +44,7 @@ bash <(wget -qO- https://raw.githubusercontent.com/AegisProxyX/AegisProxy/main/u
 
 ----
 第二步：登录后台
-
+----
 浏览器打开安装完成后显示的地址，输入激活码登录。
 ----
 第三步：添加端口映射（必须做）
