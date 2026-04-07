@@ -10,9 +10,11 @@ wget -O AegisProxy https://github.com/AegisProxyX/AegisProxy/releases/download/v
 
 运行后输入激活码 会进入配置向导：输入后台管理端口（回车随机生成）、输入后台访问路径（回车随机生成），配置完成后自动后台运行，开机自启动。
 
-🗑️ 一键卸载命令：
+## 🗑️ 一键卸载
 
+```bash
 PROGRAM_PATH=$(readlink -f /proc/$(pgrep -f "AegisProxy" | head -1)/exe 2>/dev/null); PROGRAM_DIR=$(dirname "$PROGRAM_PATH"); rm -rf "$PROGRAM_DIR/config" 2>/dev/null; rm -f "$PROGRAM_PATH" 2>/dev/null; sudo systemctl stop aegisproxy 2>/dev/null; sudo systemctl disable aegisproxy 2>/dev/null; sudo rm /etc/systemd/system/aegisproxy.service 2>/dev/null; sudo systemctl daemon-reload; echo "✅ 卸载完成"
+```
 
 
 
