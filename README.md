@@ -66,17 +66,6 @@ bash <(wget -qO- https://raw.githubusercontent.com/AegisProxyX/AegisProxy/main/u
 
 
 
-🔧 服务管理
-
-systemctl status aegisproxy     # 查看状态
-
-systemctl restart aegisproxy    # 重启服务
-
-systemctl stop aegisproxy       # 停止服务
-
-journalctl -u aegisproxy -f     # 查看日志
-
-
 ❓ 常见问题
 
 问: 端口映射显示"未启动"？
@@ -101,7 +90,7 @@ Telegram: @QA222222
 
 不管你是企业官网、个人博客、资源站、游戏服、影视站，任何你不敢说的站——对我们来说都一样。
 
-系统只做一件事：**让浏览器认不出来**
+系统只做一件事：**让浏览器认不出来** 
 
 ---
 
@@ -116,7 +105,3 @@ Telegram: @QA222222
 ## 🚀 核心口号
 
 **让浏览器追着你的规则跑**
-
-24小时全自动升级 · 不限制内容 · 防同行举报 
-
-
