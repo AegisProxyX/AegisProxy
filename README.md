@@ -45,8 +45,11 @@ AegisProxy 是一款强大的域名防拦截系统
 ===============================
 🔧 服务管理
 systemctl status aegisproxy     # 查看状态
+
 systemctl restart aegisproxy    # 重启服务
+
 systemctl stop aegisproxy       # 停止服务
+
 journalctl -u aegisproxy -f     # 查看日志
 ===============================
 ❓ 常见问题
