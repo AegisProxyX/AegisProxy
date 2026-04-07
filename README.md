@@ -16,8 +16,9 @@ AegisProxy 是一款强大的域名防拦截系统
 > ✅ **重点说明：本系统只拦截恶意爬虫和异常请求，正常访客访问完全不受影响，零感知防护。**
 
 
+## 🚀 快速部署
 
-## 📦 一键安装
+## 📦 一键安装（推荐）
 
 ```bash
 bash <(wget -qO- https://raw.githubusercontent.com/AegisProxyX/AegisProxy/main/install.sh)
