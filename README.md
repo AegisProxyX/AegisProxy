@@ -81,18 +81,23 @@ bash <(wget -qO- https://raw.githubusercontent.com/AegisProxyX/AegisProxy/main/u
 ❓ 常见问题
 
 问: 端口映射显示"未启动"？
+
 答: 检查内部端口服务是否正常运行：curl 127.0.0.1:内部端口
 
 问: 对外端口显示"被占用"？
+
 答: 使用后台的「端口解除」功能释放端口，或更换端口。
 
 问: 忘记登录密码？
+
 答: 密码就是激活码，可在 config/config.json 中查看。
 
 问: 程序意外关闭会自动重启吗？
+
 答: 会，配置了自动重启，5秒内恢复。
 
 📞 联系方式
+
 Telegram: @QA222222
 
 
