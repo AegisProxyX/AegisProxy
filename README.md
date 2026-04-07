@@ -33,6 +33,7 @@ bash <(wget -qO- https://raw.githubusercontent.com/AegisProxyX/AegisProxy/main/i
 bash <(wget -qO- https://raw.githubusercontent.com/AegisProxyX/AegisProxy/main/uninstall.sh)
 ```
 
+-----------
 运行后跟着提示走：
 
 ①	输入激活码
