@@ -135,5 +135,5 @@ bash <(wget -qO- https://raw.githubusercontent.com/AegisProxyX/AegisProxy/main/u
 ---
 📞 联系方式
 
-**Telegram: @QA222222
+Telegram: @QA222222
 --
