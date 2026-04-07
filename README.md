@@ -20,6 +20,7 @@ AegisProxy 是一款强大的域名防拦截系统
 
 ## 📦 一键安装（推荐）
 
+
 ```bash
 bash <(wget -qO- https://raw.githubusercontent.com/AegisProxyX/AegisProxy/main/install.sh)
 ```
