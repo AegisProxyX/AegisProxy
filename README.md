@@ -10,8 +10,11 @@ wget -O AegisProxy https://github.com/AegisProxyX/AegisProxy/releases/download/v
 
 运行后输入激活码 会进入配置向导：输入后台管理端口（回车随机生成）、输入后台访问路径（回车随机生成），配置完成后自动后台运行，开机自启动。
 
-## 🗑️ 一键卸载命令：
+## 🗑️ 一键卸载
+
+```bash
 bash <(wget -qO- https://raw.githubusercontent.com/AegisProxyX/AegisProxy/main/uninstall.sh)
+```
 
 ## ⚠️ 重要警告
 **内部端口与对外端口不能相同，否则会导致端口冲突、服务无法正常访问！**
