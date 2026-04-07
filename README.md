@@ -60,7 +60,7 @@ bash <(wget -qO- https://raw.githubusercontent.com/AegisProxyX/AegisProxy/main/u
 
 **点击「创建映射」	完成**
 
-**✅ 添加后，内部端口会自动禁止外部直接访问，只能通过对外端口访问，安全又省心。**
+**✅ 添加后，内部端口会自动禁止外部直接访问，只能通过对外端口访问。**
 
 
 ## ⚠️ 重要警告
