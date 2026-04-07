@@ -32,17 +32,13 @@ bash <(wget -qO- https://raw.githubusercontent.com/AegisProxyX/AegisProxy/main/u
 ```
 
 运行后跟着提示走：
-
-步骤	操作
 ①	输入激活码
 ②	输入后台端口（直接回车 → 自动随机生成）
 ③	输入后台路径（直接回车 → 自动随机生成）
 
-------
-
 第二步：登录后台
 浏览器打开安装完成后显示的地址，输入激活码登录。
----------
+
 第三步：添加端口映射（必须做）
 操作	说明
 点击左侧「端口映射」	进入端口管理页面
@@ -51,7 +47,7 @@ bash <(wget -qO- https://raw.githubusercontent.com/AegisProxyX/AegisProxy/main/u
 填写「对外端口」	用户访问的端口（比如 80）
 点击「创建映射」	完成
 ✅ 添加后，内部端口会自动禁止外部直接访问，只能通过对外端口访问，安全又省心。
-------
+
 
 ## ⚠️ 重要警告
 
