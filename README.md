@@ -8,7 +8,11 @@ AegisProxy 是一款强大的域名防拦截系统
 bash <(wget -qO- https://raw.githubusercontent.com/AegisProxyX/AegisProxy/main/install.sh)
 ```
 
-运行后输入激活码... 
+运行后输入激活码 
+进入配置向导：
+输入后台管理端口（回车随机生成）
+输入后台访问路径（回车随机生成），
+配置完成后自动后台运行，开机自启动。
 
 ## 🗑️ 一键卸载
 
@@ -18,7 +22,6 @@ bash <(wget -qO- https://raw.githubusercontent.com/AegisProxyX/AegisProxy/main/u
 
 ## ⚠️ 重要警告
 **内部端口与对外端口不能相同，否则会导致端口冲突、服务无法正常访问！**
-
 
 请确保：
 - 内部端口（你网站实际运行的端口）与AegisProxy对外端口 使用不同的端口号
