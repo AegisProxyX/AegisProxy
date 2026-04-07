@@ -34,8 +34,11 @@ bash <(wget -qO- https://raw.githubusercontent.com/AegisProxyX/AegisProxy/main/u
 ```
 
 运行后跟着提示走：
+
 ①	输入激活码
+
 ②	输入后台端口（直接回车 → 自动随机生成）
+
 ③	输入后台路径（直接回车 → 自动随机生成）
 
 第二步：登录后台
