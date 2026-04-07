@@ -21,7 +21,7 @@ bash <(wget -qO- https://raw.githubusercontent.com/AegisProxyX/AegisProxy/main/u
 ```
 
 ## ⚠️ 重要警告
-**内部端口与对外端口不能相同，否则会导致端口冲突、服务无法正常访问！**
+**内部端口与对外端口不能相同，否则会导致端口冲突、导致端口无法正常访问！**
 
 请确保：
 - 内部端口（你网站实际运行的端口）与AegisProxy对外端口 使用不同的端口号
