@@ -115,9 +115,9 @@ bash <(wget -qO- https://raw.githubusercontent.com/AegisProxyX/AegisProxy/main/u
 答: 会，配置了自动重启，5秒内恢复。
 
 
-📞 联系方式
+**📞 联系方式**
 
-Telegram: @QA222222
+** Telegram: @QA222222 **
 
 
 ## 🛡️ 你们的程序限制网站内容吗？
