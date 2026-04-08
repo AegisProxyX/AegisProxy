@@ -34,4 +34,3 @@ echo -e "${GREEN}✅ 下载完成，启动配置向导...${NC}"
 sudo /usr/local/aegisproxy/AegisProxy
 
 echo -e "${GREEN}✅ 安装完成！${NC}"
-echo -e "${GREEN}💡 以后可以直接输入 AegisProxy 运行${NC}"
