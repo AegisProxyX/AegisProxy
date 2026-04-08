@@ -4,10 +4,61 @@
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
 NC='\033[0m'
 
 echo -e "${GREEN}════════════════════════════════════════════${NC}"
 echo -e "${GREEN}     AegisProxy 一键安装脚本${NC}"
+echo -e "${GREEN}════════════════════════════════════════════${NC}"
+
+# ========== 检测并安装依赖 ==========
+echo -e "${YELLOW}🔍 检测系统依赖...${NC}"
+
+# 检测包管理器并安装 lsof
+install_lsof() {
+    if command -v apt &> /dev/null; then
+        echo -e "${YELLOW}📦 检测到 apt，正在安装 lsof...${NC}"
+        sudo apt update -qq && sudo apt install lsof -y
+    elif command -v yum &> /dev/null; then
+        echo -e "${YELLOW}📦 检测到 yum，正在安装 lsof...${NC}"
+        sudo yum install lsof -y
+    elif command -v dnf &> /dev/null; then
+        echo -e "${YELLOW}📦 检测到 dnf，正在安装 lsof...${NC}"
+        sudo dnf install lsof -y
+    else
+        echo -e "${RED}❌ 无法识别包管理器，请手动安装 lsof${NC}"
+        return 1
+    fi
+    return 0
+}
+
+# 检查 lsof 是否已安装
+if ! command -v lsof &> /dev/null; then
+    echo -e "${YELLOW}⚠️ 未检测到 lsof，正在自动安装...${NC}"
+    install_lsof
+    if [ $? -eq 0 ]; then
+        echo -e "${GREEN}✅ lsof 安装成功${NC}"
+    else
+        echo -e "${RED}❌ lsof 安装失败，部分功能可能异常${NC}"
+    fi
+else
+    echo -e "${GREEN}✅ lsof 已安装${NC}"
+fi
+
+# 检查 iptables（一般系统自带，但确认一下）
+if ! command -v iptables &> /dev/null; then
+    echo -e "${YELLOW}⚠️ 未检测到 iptables，正在安装...${NC}"
+    if command -v apt &> /dev/null; then
+        sudo apt install iptables -y
+    elif command -v yum &> /dev/null; then
+        sudo yum install iptables -y
+    elif command -v dnf &> /dev/null; then
+        sudo dnf install iptables -y
+    fi
+else
+    echo -e "${GREEN}✅ iptables 已安装${NC}"
+fi
+
 echo -e "${GREEN}════════════════════════════════════════════${NC}"
 
 # 创建安装目录
