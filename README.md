@@ -32,7 +32,7 @@
 ### 一键安装
 在终端执行以下命令即可完成系统安装：
 ```bash
-bash <(wget -qO- https://raw.githubusercontent.com/AegisProxyX/AegisProxy/main/install.sh)
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/AegisProxyX/AegisProxy/main/install.sh)"
 ```
 
 安装过程根据提示操作：
@@ -43,7 +43,7 @@ bash <(wget -qO- https://raw.githubusercontent.com/AegisProxyX/AegisProxy/main/i
 ### 一键卸载
 如需完全移除系统，执行以下命令：
 ```bash
-bash <(wget -qO- https://raw.githubusercontent.com/AegisProxyX/AegisProxy/main/uninstall.sh)
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/AegisProxyX/AegisProxy/main/uninstall.sh)"
 ```
 
 ### 初始配置
