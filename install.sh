@@ -262,37 +262,6 @@ EOF
     return 0
 }
 
-# ========== 主安装流程 ==========
-detect_os
-install_deps
-
-echo -e "${GREEN}════════════════════════════════════════════${NC}"
-
-# 创建安装目录
-echo -e "${YELLOW}📁 创建安装目录...${NC}"
-mkdir -p /usr/local/aegisproxy
-
-# 下载程序
-echo -e "${YELLOW}📥 正在下载 AegisProxy...${NC}"
-if ! download_file "https://github.com/AegisProxyX/AegisProxy/releases/download/v1.0.0/AegisProxy" "/usr/local/aegisproxy/AegisProxy"; then
-    echo -e "${RED}❌ 下载失败，请检查网络连接${NC}"
-    exit 1
-fi
-
-# 添加执行权限
-chmod +x /usr/local/aegisproxy/AegisProxy
-ln -sf /usr/local/aegisproxy/AegisProxy /usr/local/bin/AegisProxy
-
-# 创建启动脚本
-create_start_script
-
-# 运行配置向导
-echo -e "${GREEN}✅ 下载完成，启动配置向导...${NC}"
-/usr/local/aegisproxy/AegisProxy || true
-
-# 配置开机自启
-setup_autostart
-
 # ========== 创建快捷状态命令 ==========
 create_status_cmd() {
     cat > /usr/local/bin/AegisProxy << 'EOF'
@@ -328,3 +297,52 @@ EOF
     chmod +x /usr/local/bin/AegisProxy
     echo -e "${GREEN}✅ 创建状态命令: 输入 AegisProxy 即可查看状态${NC}"
 }
+
+# ========== 主安装流程 ==========
+detect_os
+install_deps
+
+echo -e "${GREEN}════════════════════════════════════════════${NC}"
+
+# 创建安装目录
+echo -e "${YELLOW}📁 创建安装目录...${NC}"
+mkdir -p /usr/local/aegisproxy
+
+# 下载程序
+echo -e "${YELLOW}📥 正在下载 AegisProxy...${NC}"
+if ! download_file "https://github.com/AegisProxyX/AegisProxy/releases/download/v1.0.0/AegisProxy" "/usr/local/aegisproxy/AegisProxy"; then
+    echo -e "${RED}❌ 下载失败，请检查网络连接${NC}"
+    exit 1
+fi
+
+# 添加执行权限
+chmod +x /usr/local/aegisproxy/AegisProxy
+ln -sf /usr/local/aegisproxy/AegisProxy /usr/local/bin/AegisProxy-bin
+
+# 创建启动脚本
+create_start_script
+
+# 运行配置向导
+echo -e "${GREEN}✅ 下载完成，启动配置向导...${NC}"
+/usr/local/aegisproxy/AegisProxy || true
+
+# 清理残留进程
+pkill -f AegisProxy 2>/dev/null || true
+sleep 1
+
+# 配置开机自启
+setup_autostart
+
+# 创建快捷状态命令
+create_status_cmd
+
+# 显示安装结果
+echo -e "${GREEN}════════════════════════════════════════════${NC}"
+echo -e "${GREEN}✅ AegisProxy 安装完成！${NC}"
+echo -e "${GREEN}════════════════════════════════════════════${NC}"
+echo -e "${YELLOW}💡 直接输入 ${GREEN}AegisProxy${YELLOW} 查看运行状态${NC}"
+echo -e "${YELLOW}💡 管理命令：${NC}"
+echo -e "   ${GREEN}AegisProxy start${NC}   - 启动服务"
+echo -e "   ${GREEN}AegisProxy stop${NC}    - 停止服务"
+echo -e "   ${GREEN}AegisProxy restart${NC} - 重启服务"
+echo -e "${GREEN}════════════════════════════════════════════${NC}"
