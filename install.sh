@@ -293,3 +293,12 @@ echo -e "${GREEN}✅ 下载完成，启动配置向导...${NC}"
 # 配置开机自启
 setup_autostart
 
+# 检查运行状态
+echo -e "${YELLOW}🔍 检查运行状态...${NC}"
+sleep 2
+if pgrep -f "AegisProxy" > /dev/null; then
+    echo -e "${GREEN}✅ AegisProxy 运行中${NC}"
+else
+    echo -e "${RED}❌ AegisProxy 未运行${NC}"
+fi
+
