@@ -262,70 +262,6 @@ EOF
     return 0
 }
 
-# ========== 创建快捷命令（输入 AegisProxy 看状态） ==========
-create_quick_cmd() {
-    # 备份原程序
-    mv /usr/local/bin/AegisProxy /usr/local/bin/AegisProxy-bin 2>/dev/null
-    
-    # 创建包装脚本
-    cat > /usr/local/bin/AegisProxy << 'EOF'
-#!/bin/bash
-
-# 如果是带参数运行
-if [ "$1" = "start" ] || [ "$1" = "stop" ] || [ "$1" = "restart" ] || [ "$1" = "logs" ] || [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
-    case "$1" in
-        start)
-            systemctl start aegisproxy 2>/dev/null || /usr/local/bin/aegisproxy-start start
-            echo -e "\033[42m✅ 启动完成\033[0m"
-            ;;
-        stop)
-            systemctl stop aegisproxy 2>/dev/null || /usr/local/bin/aegisproxy-start stop
-            echo -e "\033[41m⏸️ 已停止\033[0m"
-            ;;
-        restart)
-            systemctl restart aegisproxy 2>/dev/null || /usr/local/bin/aegisproxy-start restart
-            echo -e "\033[42m🔄 重启完成\033[0m"
-            ;;
-        logs)
-            if command -v journalctl &> /dev/null; then
-                journalctl -u aegisproxy -f
-            else
-                tail -f /var/log/aegisproxy.log
-            fi
-            ;;
-        *)
-            echo "用法: AegisProxy {start|stop|restart|logs}"
-            echo ""
-            echo "  start   - 启动服务"
-            echo "  stop    - 停止服务"
-            echo "  restart - 重启服务"
-            echo "  logs    - 查看实时日志"
-            echo ""
-            echo "直接输入 AegisProxy 查看运行状态"
-            ;;
-    esac
-    exit 0
-fi
-
-# 无参数时显示状态
-if command -v systemctl &> /dev/null && systemctl is-active --quiet aegisproxy 2>/dev/null; then
-    echo -e "\033[42m╔════════════════════════════════════════╗\033[0m"
-    echo -e "\033[42m║        ✅ AegisProxy 正在运行 ✅       ║\033[0m"
-    echo -e "\033[42m╚════════════════════════════════════════╝\033[0m"
-elif pgrep -f "AegisProxy-bin" > /dev/null 2>&1; then
-    echo -e "\033[42m╔════════════════════════════════════════╗\033[0m"
-    echo -e "\033[42m║        ✅ AegisProxy 正在运行 ✅       ║\033[0m"
-    echo -e "\033[42m╚════════════════════════════════════════╝\033[0m"
-else
-    echo -e "\033[41m╔════════════════════════════════════════╗\033[0m"
-    echo -e "\033[41m║        ❌ AegisProxy 未运行 ❌        ║\033[0m"
-    echo -e "\033[41m╚════════════════════════════════════════╝\033[0m"
-fi
-EOF
-    chmod +x /usr/local/bin/AegisProxy
-    echo -e "${GREEN}✅ 创建快捷命令: AegisProxy (输入即看状态)${NC}"
-}
-
 # ========== 主安装流程 ==========
 detect_os
 install_deps
@@ -345,37 +281,15 @@ fi
 
 # 添加执行权限
 chmod +x /usr/local/aegisproxy/AegisProxy
-ln -sf /usr/local/aegisproxy/AegisProxy /usr/local/bin/AegisProxy-bin
+ln -sf /usr/local/aegisproxy/AegisProxy /usr/local/bin/AegisProxy
 
 # 创建启动脚本
 create_start_script
 
-# 运行配置向导
+# 运行配置向导（允许被杀死，因为后面会通过服务启动）
 echo -e "${GREEN}✅ 下载完成，启动配置向导...${NC}"
 /usr/local/aegisproxy/AegisProxy || true
-
-# 清理残留进程
-pkill -f AegisProxy-bin 2>/dev/null || true
-sleep 1
 
 # 配置开机自启
 setup_autostart
 
-# 创建快捷命令
-create_quick_cmd
-
-# 显示安装结果
-echo -e "${GREEN}════════════════════════════════════════════${NC}"
-echo -e "${GREEN}✅ AegisProxy 安装完成！${NC}"
-echo -e "${GREEN}════════════════════════════════════════════${NC}"
-echo ""
-echo -e "${YELLOW}💡 超级简单命令：${NC}"
-echo -e "   ${GREEN}AegisProxy${NC}          - 查看运行状态 (直接输入软件名)"
-echo -e "   ${GREEN}AegisProxy start${NC}    - 启动服务"
-echo -e "   ${GREEN}AegisProxy stop${NC}     - 停止服务"
-echo -e "   ${GREEN}AegisProxy restart${NC}  - 重启服务"
-echo ""
-echo -e "${YELLOW}💡 后台管理地址：${NC}"
-echo -e "   查看日志获取地址: ${GREEN}journalctl -u aegisproxy | grep "后台地址"${NC}"
-echo ""
-echo -e "${GREEN}════════════════════════════════════════════${NC}"
