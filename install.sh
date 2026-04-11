@@ -267,7 +267,6 @@ EOF
         return 0
     fi
     
-    # 使用 crontab 保活（最后的方案）
     echo -e "${YELLOW}⚠️ 使用 crontab 保活机制${NC}"
     (crontab -l 2>/dev/null; echo "@reboot /usr/local/aegisproxy/AegisProxy > /dev/null 2>&1 &") | crontab -
     /usr/local/aegisproxy/AegisProxy > /dev/null 2>&1 &
@@ -298,7 +297,7 @@ ln -sf /usr/local/aegisproxy/AegisProxy /usr/local/bin/AegisProxy
 # 创建启动脚本
 create_start_script
 
-# 运行配置向导（允许被杀死，因为后面会通过服务启动）
+# 运行配置向导
 echo -e "${GREEN}✅ 下载完成，启动配置向导...${NC}"
 /usr/local/aegisproxy/AegisProxy || true
 
