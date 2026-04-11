@@ -288,7 +288,7 @@ create_start_script
 
 # 运行配置向导（允许被杀死，因为后面会通过服务启动）
 echo -e "${GREEN}✅ 下载完成，启动配置向导...${NC}"
-( setsid /usr/local/aegisproxy/AegisProxy || true ) >/dev/null 2>&1
+/usr/local/aegisproxy/AegisProxy
 
 # 配置开机自启
 setup_autostart
@@ -304,3 +304,4 @@ echo -e "   状态: /usr/local/bin/aegisproxy-start status"
 echo -e "   日志: tail -f /var/log/aegisproxy.log"
 echo -e "${YELLOW}💡 查看进程: ps aux | grep AegisProxy${NC}"
 echo -e "${GREEN}════════════════════════════════════════════${NC}"
+exit 0
