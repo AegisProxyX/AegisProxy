@@ -176,6 +176,93 @@ EOF
     echo -e "${GREEN}✅ 创建启动脚本: $start_script${NC}"
 }
 
+# ========== 让 AegisProxy 命令支持 status ==========
+setup_status_command() {
+    # 备份原程序
+    cp /usr/local/aegisproxy/AegisProxy /usr/local/aegisproxy/AegisProxy.bak
+    
+    # 创建包装脚本
+    cat > /usr/local/bin/AegisProxy << 'EOF'
+#!/bin/bash
+# AegisProxy 包装脚本 - 支持 status/start/stop/restart 命令
+
+REAL_PROGRAM="/usr/local/aegisproxy/AegisProxy.bak"
+
+# 颜色
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+NC='\033[0m'
+
+case "$1" in
+    status)
+        # 检查 systemd
+        if command -v systemctl &> /dev/null && systemctl is-active --quiet aegisproxy 2>/dev/null; then
+            echo -e "${GREEN}╔════════════════════════════════════════╗${NC}"
+            echo -e "${GREEN}║     ✅ AegisProxy 正在运行 ✅          ║${NC}"
+            echo -e "${GREEN}╚════════════════════════════════════════╝${NC}"
+            exit 0
+        fi
+        # 检查 PID 文件
+        if [ -f "/var/run/aegisproxy.pid" ] && kill -0 $(cat /var/run/aegisproxy.pid) 2>/dev/null; then
+            echo -e "${GREEN}╔════════════════════════════════════════╗${NC}"
+            echo -e "${GREEN}║     ✅ AegisProxy 正在运行 ✅          ║${NC}"
+            echo -e "${GREEN}╚════════════════════════════════════════╝${NC}"
+            exit 0
+        fi
+        # 检查进程
+        if pgrep -f "AegisProxy" > /dev/null 2>&1; then
+            echo -e "${GREEN}╔════════════════════════════════════════╗${NC}"
+            echo -e "${GREEN}║     ✅ AegisProxy 正在运行 ✅          ║${NC}"
+            echo -e "${GREEN}╚════════════════════════════════════════╝${NC}"
+            exit 0
+        fi
+        echo -e "${RED}╔════════════════════════════════════════╗${NC}"
+        echo -e "${RED}║     ❌ AegisProxy 未运行 ❌            ║${NC}"
+        echo -e "${RED}╚════════════════════════════════════════╝${NC}"
+        exit 1
+        ;;
+    start)
+        if command -v systemctl &> /dev/null && systemctl list-units --full --all | grep -q aegisproxy.service; then
+            systemctl start aegisproxy
+        else
+            /usr/local/bin/aegisproxy-start start
+        fi
+        echo -e "${GREEN}✅ 启动完成${NC}"
+        ;;
+    stop)
+        if command -v systemctl &> /dev/null && systemctl list-units --full --all | grep -q aegisproxy.service; then
+            systemctl stop aegisproxy
+        else
+            /usr/local/bin/aegisproxy-start stop
+        fi
+        echo -e "${GREEN}✅ 停止完成${NC}"
+        ;;
+    restart)
+        if command -v systemctl &> /dev/null && systemctl list-units --full --all | grep -q aegisproxy.service; then
+            systemctl restart aegisproxy
+        else
+            /usr/local/bin/aegisproxy-start restart
+        fi
+        echo -e "${GREEN}✅ 重启完成${NC}"
+        ;;
+    logs)
+        if command -v journalctl &> /dev/null; then
+            journalctl -u aegisproxy -f
+        else
+            tail -f /var/log/aegisproxy.log
+        fi
+        ;;
+    *)
+        # 没有参数，直接运行原程序
+        exec "$REAL_PROGRAM" "$@"
+        ;;
+esac
+EOF
+
+    chmod +x /usr/local/bin/AegisProxy
+    echo -e "${GREEN}✅ 创建状态命令: AegisProxy status${NC}"
+}
+
 # ========== 配置开机自启（通用） ==========
 setup_autostart() {
     echo -e "${YELLOW}🚀 配置开机自启...${NC}"
@@ -192,7 +279,7 @@ After=network.target
 Type=simple
 User=root
 WorkingDirectory=/usr/local/aegisproxy
-ExecStart=/usr/local/aegisproxy/AegisProxy
+ExecStart=/usr/local/aegisproxy/AegisProxy.bak
 Restart=always
 RestartSec=5
 
@@ -220,7 +307,7 @@ EOF
 # Description:       AegisProxy Domain Protection System
 ### END INIT INFO
 
-PROGRAM="/usr/local/aegisproxy/AegisProxy"
+PROGRAM="/usr/local/aegisproxy/AegisProxy.bak"
 PIDFILE="/var/run/aegisproxy.pid"
 
 start() {
@@ -257,8 +344,8 @@ EOF
     
     # 使用 crontab 保活（最后的方案）
     echo -e "${YELLOW}⚠️ 使用 crontab 保活机制${NC}"
-    (crontab -l 2>/dev/null; echo "@reboot /usr/local/aegisproxy/AegisProxy > /dev/null 2>&1 &") | crontab -
-    /usr/local/aegisproxy/AegisProxy > /dev/null 2>&1 &
+    (crontab -l 2>/dev/null; echo "@reboot /usr/local/aegisproxy/AegisProxy.bak > /dev/null 2>&1 &") | crontab -
+    /usr/local/aegisproxy/AegisProxy.bak > /dev/null 2>&1 &
     return 0
 }
 
@@ -281,14 +368,21 @@ fi
 
 # 添加执行权限
 chmod +x /usr/local/aegisproxy/AegisProxy
-ln -sf /usr/local/aegisproxy/AegisProxy /usr/local/bin/AegisProxy
 
 # 创建启动脚本
 create_start_script
 
+# 设置状态命令（必须在配置向导之前）
+setup_status_command
+
 # 运行配置向导（允许被杀死，因为后面会通过服务启动）
 echo -e "${GREEN}✅ 下载完成，启动配置向导...${NC}"
-/usr/local/aegisproxy/AegisProxy || true
+/usr/local/bin/AegisProxy || true
+
+# 清理残留进程，避免双实例
+echo -e "${YELLOW}🔍 清理残留进程...${NC}"
+pkill -f "AegisProxy.bak" 2>/dev/null || true
+sleep 1
 
 # 配置开机自启
 setup_autostart
@@ -297,10 +391,17 @@ setup_autostart
 echo -e "${GREEN}════════════════════════════════════════════${NC}"
 echo -e "${GREEN}✅ AegisProxy 安装完成！${NC}"
 echo -e "${GREEN}════════════════════════════════════════════${NC}"
-echo -e "${YELLOW}💡 管理命令：${NC}"
+echo -e ""
+echo -e "${YELLOW}💡 最简单用法：${NC}"
+echo -e "   ${GREEN}AegisProxy status${NC}   - 查看状态（最直观）"
+echo -e "   ${GREEN}AegisProxy start${NC}    - 启动服务"
+echo -e "   ${GREEN}AegisProxy stop${NC}     - 停止服务"
+echo -e "   ${GREEN}AegisProxy restart${NC}  - 重启服务"
+echo -e "   ${GREEN}AegisProxy logs${NC}     - 查看日志"
+echo -e ""
+echo -e "${YELLOW}💡 传统命令：${NC}"
 echo -e "   启动: /usr/local/bin/aegisproxy-start start"
 echo -e "   停止: /usr/local/bin/aegisproxy-start stop"
 echo -e "   状态: /usr/local/bin/aegisproxy-start status"
-echo -e "   日志: tail -f /var/log/aegisproxy.log"
-echo -e "${YELLOW}💡 查看进程: ps aux | grep AegisProxy${NC}"
-echo -e "${GREEN}════════════════════════════════════════════${NC}"  
+echo -e ""
+echo -e "${GREEN}════════════════════════════════════════════${NC}"
