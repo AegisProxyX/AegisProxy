@@ -74,7 +74,7 @@ download_file() {
 }
 
 create_start_script() {
-cat >/usr/local/bin/AegisProxy <<'EOF'
+cat >/usr/local/bin/aegisproxy-start <<'EOF'
 #!/bin/bash
 PROGRAM="/usr/local/aegisproxy/AegisProxy"
 PIDFILE="/var/run/aegisproxy.pid"
@@ -108,7 +108,7 @@ case "$1" in
   *) echo "用法: $0 {start|stop|restart|status}" ;;
 esac
 EOF
-chmod +x /usr/local/bin/AegisProxy
+chmod +x /usr/local/bin/aegisproxy-start
 }
 
 setup_autostart() {
@@ -181,6 +181,8 @@ mkdir -p /usr/local/aegisproxy
 download_file "/usr/local/aegisproxy/AegisProxy"
 
 chmod +x /usr/local/aegisproxy/AegisProxy
+ln -sf /usr/local/aegisproxy/AegisProxy /usr/local/bin/AegisProxy
+
 create_start_script
 
 echo -e "${GREEN}✅ 启动配置向导${NC}"
@@ -191,5 +193,8 @@ setup_autostart
 echo -e "${GREEN}════════════════════════════════════════════${NC}"
 echo -e "${GREEN}✅ 安装完成${NC}"
 echo -e "${GREEN}════════════════════════════════════════════${NC}"
-echo -e "  状态: AegisProxy status"
+echo -e "${YELLOW}管理命令${NC}"
+echo -e "  启动: aegisproxy-start start"
+echo -e "  停止: aegisproxy-start stop"
+echo -e "  状态: aegisproxy-start status"
 echo -e "${GREEN}════════════════════════════════════════════${NC}"
