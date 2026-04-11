@@ -14,28 +14,24 @@ echo -e "${GREEN}═════════════════════
 # ========== 检测是否为 root ==========
 if [ "$EUID" -ne 0 ]; then 
     echo -e "${RED}❌ 请使用 root 用户执行本安装脚本！${NC}"
-    echo -e "${YELLOW}💡 请先执行以下命令切换到 root 用户：${NC}"
-    echo -e "${GREEN}   su root${NC}"
-    echo -e "${GREEN}   # 或${NC}"
-    echo -e "${GREEN}   sudo -i${NC}"
-    echo ""
-    echo -e "${YELLOW}💡 切换后，重新运行安装命令即可${NC}"
     exit 1
 fi
+
+# ========== 停止旧服务 ==========
+echo -e "${YELLOW}🛑 停止旧服务...${NC}"
+systemctl stop aegisproxy 2>/dev/null
+pkill -f AegisProxy 2>/dev/null
+sleep 1
 
 # ========== 检测并安装依赖 ==========
 echo -e "${YELLOW}🔍 检测系统依赖...${NC}"
 
-# 检测包管理器并安装 lsof
 install_lsof() {
     if command -v apt &> /dev/null; then
-        echo -e "${YELLOW}📦 检测到 apt，正在安装 lsof...${NC}"
         apt update -qq && apt install lsof -y
     elif command -v yum &> /dev/null; then
-        echo -e "${YELLOW}📦 检测到 yum，正在安装 lsof...${NC}"
         yum install lsof -y
     elif command -v dnf &> /dev/null; then
-        echo -e "${YELLOW}📦 检测到 dnf，正在安装 lsof...${NC}"
         dnf install lsof -y
     else
         echo -e "${RED}❌ 无法识别包管理器，请手动安装 lsof${NC}"
@@ -44,67 +40,47 @@ install_lsof() {
     return 0
 }
 
-# 检查 lsof 是否已安装
 if ! command -v lsof &> /dev/null; then
-    echo -e "${YELLOW}⚠️ 未检测到 lsof，正在自动安装...${NC}"
     install_lsof
-    if [ $? -eq 0 ]; then
-        echo -e "${GREEN}✅ lsof 安装成功${NC}"
-    else
-        echo -e "${RED}❌ lsof 安装失败，部分功能可能异常${NC}"
-    fi
-else
-    echo -e "${GREEN}✅ lsof 已安装${NC}"
 fi
 
-# 检查 iptables（一般系统自带，但确认一下）
-if ! command -v iptables &> /dev/null; then
-    echo -e "${YELLOW}⚠️ 未检测到 iptables，正在安装...${NC}"
-    if command -v apt &> /dev/null; then
-        apt install iptables -y
-    elif command -v yum &> /dev/null; then
-        yum install iptables -y
-    elif command -v dnf &> /dev/null; then
-        dnf install iptables -y
-    fi
-else
-    echo -e "${GREEN}✅ iptables 已安装${NC}"
-fi
-
-echo -e "${GREEN}════════════════════════════════════════════${NC}"
-
-# 创建安装目录
+# ========== 创建目录 ==========
 echo -e "${YELLOW}📁 创建安装目录...${NC}"
-mkdir -p /usr/local/aegisproxy
+mkdir -p /usr/local/aegisproxy/config
+chmod 755 /usr/local/aegisproxy
 
-# 下载程序到安装目录
+# ========== 下载程序 ==========
 echo -e "${YELLOW}📥 正在下载 AegisProxy...${NC}"
-wget -O /usr/local/aegisproxy/AegisProxy https://github.com/AegisProxyX/AegisProxy/releases/download/v1.0.0/AegisProxy
 
-if [ $? -ne 0 ]; then
+# 支持多个下载源
+DOWNLOAD_SUCCESS=false
+for URL in \
+    "https://github.com/AegisProxyX/AegisProxy/releases/download/v1.0.0/AegisProxy" \
+    "https://mirror.example.com/AegisProxy" \
+    ; do
+    echo -e "   尝试从 $URL 下载..."
+    wget -q --show-progress -O /usr/local/aegisproxy/AegisProxy "$URL"
+    if [ $? -eq 0 ] && [ -s /usr/local/aegisproxy/AegisProxy ]; then
+        DOWNLOAD_SUCCESS=true
+        break
+    fi
+done
+
+if [ "$DOWNLOAD_SUCCESS" = false ]; then
     echo -e "${RED}❌ 下载失败，请检查网络连接${NC}"
     exit 1
 fi
 
 # 添加执行权限
 chmod +x /usr/local/aegisproxy/AegisProxy
-
-# 创建软链接到 PATH
 ln -sf /usr/local/aegisproxy/AegisProxy /usr/local/bin/AegisProxy
 
-# 运行配置向导（加上 || true 防止退出影响后续命令）
-echo -e "${GREEN}✅ 下载完成，启动配置向导...${NC}"
-/usr/local/aegisproxy/AegisProxy || true
+echo -e "${GREEN}✅ 下载完成${NC}"
 
-# ========== 配置向导完成后，创建 systemd 服务 ==========
-echo -e "${YELLOW}🚀 正在创建 systemd 服务...${NC}"
+# ========== 直接创建 systemd 服务（不依赖程序内部函数）==========
+echo -e "${YELLOW}🚀 创建 systemd 服务...${NC}"
 
-# 停止可能残留的进程
-pkill -f AegisProxy 2>/dev/null
-sleep 1
-
-# 创建服务文件
-cat > /etc/systemd/system/aegisproxy.service << EOF
+cat > /etc/systemd/system/aegisproxy.service << 'EOF'
 [Unit]
 Description=AegisProxy Service
 After=network.target
@@ -123,36 +99,60 @@ StandardError=journal
 WantedBy=multi-user.target
 EOF
 
-# 重载 systemd
 systemctl daemon-reload
-
-# 启用开机自启
 systemctl enable aegisproxy
 
-# 启动服务
-systemctl start aegisproxy
+echo -e "${GREEN}✅ systemd 服务创建成功${NC}"
 
-# 等待服务启动
+# ========== 首次配置（使用 expect 或后台运行 + 配置文件）==========
+echo -e "${YELLOW}🔧 首次配置...${NC}"
+
+# 检查是否已有配置文件
+if [ ! -f /usr/local/aegisproxy/config/setup.json ]; then
+    echo -e "${YELLOW}⚙️ 检测到首次安装，请按照提示完成配置...${NC}"
+    echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    
+    # 前台运行程序进行配置，配置完成后程序会自动退出
+    /usr/local/aegisproxy/AegisProxy
+    
+    echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+fi
+
+# ========== 启动服务 ==========
+echo -e "${YELLOW}🚀 启动 AegisProxy 服务...${NC}"
+systemctl start aegisproxy
 sleep 2
 
 # 检查服务状态
 if systemctl is-active --quiet aegisproxy; then
     echo -e "${GREEN}✅ AegisProxy 服务已启动${NC}"
-    echo ""
-    echo -e "${GREEN}════════════════════════════════════════════${NC}"
-    echo -e "${GREEN}     🎉 安装成功！${NC}"
-    echo -e "${GREEN}════════════════════════════════════════════${NC}"
-    echo ""
-    echo -e "${YELLOW}📌 常用命令：${NC}"
-    echo -e "   ${GREEN}查看状态:${NC} systemctl status aegisproxy"
-    echo -e "   ${GREEN}查看日志:${NC} journalctl -u aegisproxy -f"
-    echo -e "   ${GREEN}重启服务:${NC} systemctl restart aegisproxy"
-    echo -e "   ${GREEN}停止服务:${NC} systemctl stop aegisproxy"
-    echo ""
+    
+    # 获取后台地址
+    sleep 1
+    if [ -f /usr/local/aegisproxy/config/setup.json ]; then
+        ADMIN_PORT=$(grep -o '"admin_port":[0-9]*' /usr/local/aegisproxy/config/setup.json | cut -d: -f2)
+        ADMIN_PATH=$(grep -o '"admin_path":"[^"]*"' /usr/local/aegisproxy/config/setup.json | cut -d'"' -f4)
+        
+        # 获取服务器IP
+        SERVER_IP=$(curl -s ifconfig.me 2>/dev/null || curl -s ipinfo.io/ip 2>/dev/null || echo "服务器IP")
+        
+        echo -e ""
+        echo -e "${GREEN}════════════════════════════════════════════${NC}"
+        echo -e "${GREEN}     🎉 AegisProxy 安装成功！${NC}"
+        echo -e "${GREEN}════════════════════════════════════════════${NC}"
+        echo -e "${YELLOW}📋 访问信息：${NC}"
+        echo -e "   后台地址: ${GREEN}http://${SERVER_IP}:${ADMIN_PORT}${ADMIN_PATH}${NC}"
+        echo -e "   激活码:   ${GREEN}请查看 /usr/local/aegisproxy/config/config.json${NC}"
+        echo -e ""
+        echo -e "${YELLOW}📌 常用命令：${NC}"
+        echo -e "   查看状态: ${GREEN}systemctl status aegisproxy${NC}"
+        echo -e "   查看日志: ${GREEN}journalctl -u aegisproxy -f${NC}"
+        echo -e "   重启服务: ${GREEN}systemctl restart aegisproxy${NC}"
+        echo -e "   停止服务: ${GREEN}systemctl stop aegisproxy${NC}"
+        echo -e "${GREEN}════════════════════════════════════════════${NC}"
+    fi
 else
-    echo -e "${RED}❌ 服务启动失败，请检查日志${NC}"
+    echo -e "${RED}❌ 服务启动失败，查看日志：${NC}"
     journalctl -u aegisproxy -n 20 --no-pager
     exit 1
 fi
-
-echo -e "${GREEN}✅ 安装完成！${NC}"
