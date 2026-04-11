@@ -292,3 +292,62 @@ echo -e "${GREEN}✅ 下载完成，启动配置向导...${NC}"
 
 # 配置开机自启
 setup_autostart
+
+
+# ========== 创建快捷状态命令 ==========
+create_status_cmd() {
+    # 备份原程序
+    mv /usr/local/bin/AegisProxy /usr/local/bin/AegisProxy-bin 2>/dev/null
+    
+    # 创建新命令
+    cat > /usr/local/bin/AegisProxy << 'EOF'
+#!/bin/bash
+if [ "$1" = "start" ] || [ "$1" = "stop" ] || [ "$1" = "restart" ] || [ "$1" = "logs" ]; then
+    case "$1" in
+        start)
+            systemctl start aegisproxy
+            echo -e "\033[42m✅ 启动完成\033[0m"
+            ;;
+        stop)
+            systemctl stop aegisproxy
+            echo -e "\033[41m⏸️ 已停止\033[0m"
+            ;;
+        restart)
+            systemctl restart aegisproxy
+            echo -e "\033[42m🔄 重启完成\033[0m"
+            ;;
+        logs)
+            journalctl -u aegisproxy -f
+            ;;
+    esac
+    exit 0
+fi
+
+if systemctl is-active --quiet aegisproxy 2>/dev/null; then
+    echo -e "\033[42m╔════════════════════════════════════╗\033[0m"
+    echo -e "\033[42m║     ✅ AegisProxy 正在运行 ✅     ║\033[0m"
+    echo -e "\033[42m╚════════════════════════════════════╝\033[0m"
+else
+    echo -e "\033[41m╔════════════════════════════════════╗\033[0m"
+    echo -e "\033[41m║     ❌ AegisProxy 未运行 ❌     ║\033[0m"
+    echo -e "\033[41m╚════════════════════════════════════╝\033[0m"
+fi
+EOF
+    chmod +x /usr/local/bin/AegisProxy
+    echo -e "${GREEN}✅ 创建状态命令: 输入 AegisProxy 即可查看状态${NC}"
+}
+
+# 调用
+create_status_cmd
+
+# 显示安装结果
+echo -e "${GREEN}════════════════════════════════════════════${NC}"
+echo -e "${GREEN}✅ AegisProxy 安装完成！${NC}"
+echo -e "${GREEN}════════════════════════════════════════════${NC}"
+echo -e "${YELLOW}💡 直接输入 ${GREEN}AegisProxy${YELLOW} 查看运行状态${NC}"
+echo -e "${YELLOW}💡 管理命令：${NC}"
+echo -e "   ${GREEN}AegisProxy start${NC}   - 启动服务"
+echo -e "   ${GREEN}AegisProxy stop${NC}    - 停止服务"
+echo -e "   ${GREEN}AegisProxy restart${NC} - 重启服务"
+echo -e "   ${GREEN}AegisProxy logs${NC}    - 查看日志"
+echo -e "${GREEN}════════════════════════════════════════════${NC}"
