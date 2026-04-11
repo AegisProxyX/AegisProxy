@@ -92,9 +92,9 @@ chmod +x /usr/local/aegisproxy/AegisProxy
 # 创建软链接到 PATH
 ln -sf /usr/local/aegisproxy/AegisProxy /usr/local/bin/AegisProxy
 
-# 运行配置向导
+# 运行配置向导（加上 || true 防止退出影响后续命令）
 echo -e "${GREEN}✅ 下载完成，启动配置向导...${NC}"
-/usr/local/aegisproxy/AegisProxy
+/usr/local/aegisproxy/AegisProxy || true
 
 # ========== 配置向导完成后，创建 systemd 服务 ==========
 echo -e "${YELLOW}🚀 正在创建 systemd 服务...${NC}"
