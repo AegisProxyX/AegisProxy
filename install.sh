@@ -303,4 +303,4 @@ echo -e "   停止: /usr/local/bin/aegisproxy-start stop"
 echo -e "   状态: /usr/local/bin/aegisproxy-start status"
 echo -e "   日志: tail -f /var/log/aegisproxy.log"
 echo -e "${YELLOW}💡 查看进程: ps aux | grep AegisProxy${NC}"
-echo -e "${GREEN}════════════════════════════════════════════${NC}"  我这个安装命令，这次可以在所有linux系统都能用吗？保证可以安装成功吗？失败了会不会提示
+echo -e "${GREEN}════════════════════════════════════════════${NC}"
