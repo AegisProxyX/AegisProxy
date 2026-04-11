@@ -178,7 +178,7 @@ EOF
 
 # ========== 配置开机自启（通用） ==========
 setup_autostart() {
-   # echo -e "${YELLOW}🚀 配置开机自启...${NC}"
+   # echo -e "${YELLOW}${NC}"
    
     
     # 优先使用 systemd
