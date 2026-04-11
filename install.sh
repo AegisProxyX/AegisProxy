@@ -96,4 +96,63 @@ ln -sf /usr/local/aegisproxy/AegisProxy /usr/local/bin/AegisProxy
 echo -e "${GREEN}✅ 下载完成，启动配置向导...${NC}"
 /usr/local/aegisproxy/AegisProxy
 
+# ========== 配置向导完成后，创建 systemd 服务 ==========
+echo -e "${YELLOW}🚀 正在创建 systemd 服务...${NC}"
+
+# 停止可能残留的进程
+pkill -f AegisProxy 2>/dev/null
+sleep 1
+
+# 创建服务文件
+cat > /etc/systemd/system/aegisproxy.service << EOF
+[Unit]
+Description=AegisProxy Service
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/usr/local/aegisproxy
+ExecStart=/usr/local/aegisproxy/AegisProxy
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# 重载 systemd
+systemctl daemon-reload
+
+# 启用开机自启
+systemctl enable aegisproxy
+
+# 启动服务
+systemctl start aegisproxy
+
+# 等待服务启动
+sleep 2
+
+# 检查服务状态
+if systemctl is-active --quiet aegisproxy; then
+    echo -e "${GREEN}✅ AegisProxy 服务已启动${NC}"
+    echo ""
+    echo -e "${GREEN}════════════════════════════════════════════${NC}"
+    echo -e "${GREEN}     🎉 安装成功！${NC}"
+    echo -e "${GREEN}════════════════════════════════════════════${NC}"
+    echo ""
+    echo -e "${YELLOW}📌 常用命令：${NC}"
+    echo -e "   ${GREEN}查看状态:${NC} systemctl status aegisproxy"
+    echo -e "   ${GREEN}查看日志:${NC} journalctl -u aegisproxy -f"
+    echo -e "   ${GREEN}重启服务:${NC} systemctl restart aegisproxy"
+    echo -e "   ${GREEN}停止服务:${NC} systemctl stop aegisproxy"
+    echo ""
+else
+    echo -e "${RED}❌ 服务启动失败，请检查日志${NC}"
+    journalctl -u aegisproxy -n 20 --no-pager
+    exit 1
+fi
+
 echo -e "${GREEN}✅ 安装完成！${NC}"
