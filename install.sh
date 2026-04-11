@@ -92,24 +92,35 @@ install_deps() {
     return 0
 }
 
-# ========== 下载文件（支持重试） ==========
+# ========== 下载文件（支持重试+国内加速） ==========
 download_file() {
     local url=$1
     local output=$2
     local retry=3
-    
-    for i in $(seq 1 $retry); do
-        echo -e "${YELLOW}📥 下载尝试 $i/$retry...${NC}"
-        if command -v wget &> /dev/null; then
-            wget -O "$output" "$url" && return 0
-        elif command -v curl &> /dev/null; then
-            curl -L -o "$output" "$url" && return 0
-        else
-            echo -e "${RED}❌ 没有找到 wget 或 curl${NC}"
-            return 1
-        fi
-        sleep 2
+
+    local mirrors=(
+        "$url"
+        "https://ghproxy.net/${url}"
+    )
+
+    for mirror in "${mirrors[@]}"; do
+        for i in $(seq 1 $retry); do
+            echo -e "${YELLOW}📥 下载尝试 $i/$retry...${NC}"
+            if command -v wget &> /dev/null; then
+                wget -q --timeout=10 -O "$output" "$mirror" 2>/dev/null
+            elif command -v curl &> /dev/null; then
+                curl -s -L --connect-timeout 10 -o "$output" "$mirror" 2>/dev/null
+            fi
+
+            if [ -s "$output" ]; then
+                echo -e "${GREEN}✅ 下载成功${NC}"
+                return 0
+            fi
+            sleep 1
+        done
     done
+
+    echo -e "${RED}❌ 下载失败，请检查网络连接${NC}"
     return 1
 }
 
