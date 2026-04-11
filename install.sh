@@ -107,9 +107,9 @@ download_file() {
         for i in $(seq 1 $retry); do
             echo -e "${YELLOW}📥 下载尝试 $i/$retry...${NC}"
             if command -v wget &> /dev/null; then
-                wget -q --timeout=10 -O "$output" "$mirror" 2>/dev/null
+                wget --timeout=10 -O "$output" "$mirror"
             elif command -v curl &> /dev/null; then
-                curl -s -L --connect-timeout 10 -o "$output" "$mirror" 2>/dev/null
+                curl -L --connect-timeout 10 -o "$output" "$mirror"
             fi
 
             if [ -s "$output" ]; then
