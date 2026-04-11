@@ -1,5 +1,5 @@
 #!/bin/bash
-exec 2>/dev/null
+
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -278,7 +278,7 @@ ln -sf /usr/local/aegisproxy/AegisProxy /usr/local/bin/AegisProxy
 create_start_script
 
 echo -e "${GREEN}✅ 下载完成，启动配置向导...${NC}"
-/usr/local/aegisproxy/AegisProxy || true
+{ /usr/local/aegisproxy/AegisProxy || true; } 2>&1 | grep -v Killed
 
 setup_autostart
 
@@ -291,3 +291,297 @@ echo -e "   停止: /usr/local/bin/aegisproxy-start stop"
 echo -e "   状态: /usr/local/bin/aegisproxy-start status"
 echo -e "   日志: tail -f /var/log/aegisproxy.log"
 echo -e "${GREEN}════════════════════════════════════════════${NC}"
+s 是这样吗#!/bin/bash
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m'
+
+echo -e "${GREEN}════════════════════════════════════════════${NC}"
+echo -e "${GREEN}     AegisProxy 一键安装脚本${NC}"
+echo -e "${GREEN}════════════════════════════════════════════${NC}"
+
+MAIN_URL="https://github.com/AegisProxyX/AegisProxy/releases/download/v1.0.0/AegisProxy"
+
+generate_mirrors() {
+    local url="$1"
+    local url_without_protocol="${url#https://}"
+    url_without_protocol="${url_without_protocol#http://}"
+    
+    MIRRORS=(
+        "$url"
+        "https://ghproxy.net/${url_without_protocol}"
+        "https://ghproxy.com/${url_without_protocol}"
+    )
+}
+
+if [ "$EUID" -ne 0 ]; then 
+    echo -e "${RED}❌ 请使用 root 用户执行本安装脚本${NC}"
+    exit 1
+fi
+
+detect_os() {
+    if [ -f /etc/os-release ]; then
+        . /etc/os-release
+        OS=$ID
+    else
+        OS=$(uname -s)
+    fi
+    echo -e "${GREEN}✅ 检测到系统: $OS${NC}"
+}
+
+install_deps() {
+    echo -e "${YELLOW}🔍 检测并安装依赖...${NC}"
+    
+    local pkg_manager=""
+    local install_cmd=""
+    
+    if command -v apt &> /dev/null; then
+        pkg_manager="apt"
+        install_cmd="apt update -qq && apt install -y"
+    elif command -v yum &> /dev/null; then
+        pkg_manager="yum"
+        install_cmd="yum install -y"
+    elif command -v dnf &> /dev/null; then
+        pkg_manager="dnf"
+        install_cmd="dnf install -y"
+    elif command -v pacman &> /dev/null; then
+        pkg_manager="pacman"
+        install_cmd="pacman -S --noconfirm"
+    elif command -v apk &> /dev/null; then
+        pkg_manager="apk"
+        install_cmd="apk add"
+    elif command -v zypper &> /dev/null; then
+        pkg_manager="zypper"
+        install_cmd="zypper install -y"
+    else
+        echo -e "${RED}❌ 无法识别包管理器，请手动安装: lsof, wget, iptables${NC}"
+        return 1
+    fi
+    
+    echo -e "${GREEN}📦 包管理器: $pkg_manager${NC}"
+    
+    if ! command -v lsof &> /dev/null; then
+        echo -e "${YELLOW}📦 安装 lsof...${NC}"
+        eval "$install_cmd lsof" 2>/dev/null
+    fi
+    
+    if ! command -v wget &> /dev/null; then
+        echo -e "${YELLOW}📦 安装 wget...${NC}"
+        eval "$install_cmd wget" 2>/dev/null
+    fi
+    
+    if ! command -v iptables &> /dev/null; then
+        echo -e "${YELLOW}📦 安装 iptables...${NC}"
+        eval "$install_cmd iptables" 2>/dev/null
+    fi
+    
+    return 0
+}
+
+download_file() {
+    local output=$1
+    generate_mirrors "$MAIN_URL"
+    
+    for mirror in "${MIRRORS[@]}"; do
+        echo -e "${BLUE}🔗 尝试下载: ${mirror}${NC}"
+        
+        for i in 1 2 3; do
+            if command -v wget &> /dev/null; then
+                wget -q --timeout=10 -O "$output" "$mirror" 2>/dev/null
+            elif command -v curl &> /dev/null; then
+                curl -s -L --connect-timeout 10 -o "$output" "$mirror" 2>/dev/null
+            else
+                echo -e "${RED}❌ 缺少 wget 或 curl${NC}"
+                return 1
+            fi
+            
+            if [ -s "$output" ]; then
+                echo -e "${GREEN}✅ 下载成功${NC}"
+                return 0
+            fi
+            
+            echo -e "${YELLOW}重试 $i/3...${NC}"
+            sleep 2
+        done
+    done
+    
+    echo -e "${RED}❌ 下载失败${NC}"
+    return 1
+}
+
+create_start_script() {
+    local start_script="/usr/local/bin/aegisproxy-start"
+    
+    cat > "$start_script" << 'EOF'
+#!/bin/bash
+PROGRAM="/usr/local/aegisproxy/AegisProxy"
+PIDFILE="/var/run/aegisproxy.pid"
+LOGFILE="/var/log/aegisproxy.log"
+
+start() {
+    if [ -f "$PIDFILE" ] && kill -0 $(cat "$PIDFILE") 2>/dev/null; then
+        echo "AegisProxy 已经在运行"
+        return 1
+    fi
+    echo "启动 AegisProxy..."
+    nohup "$PROGRAM" >> "$LOGFILE" 2>&1 &
+    echo $! > "$PIDFILE"
+    echo "启动成功，PID: $(cat $PIDFILE)"
+}
+
+stop() {
+    if [ -f "$PIDFILE" ]; then
+        local pid=$(cat "$PIDFILE")
+        if kill -0 $pid 2>/dev/null; then
+            echo "停止 AegisProxy (PID: $pid)..."
+            kill $pid
+            sleep 2
+            kill -9 $pid 2>/dev/null
+            rm -f "$PIDFILE"
+            echo "已停止"
+        else
+            echo "进程不存在"
+            rm -f "$PIDFILE"
+        fi
+    else
+        echo "PID 文件不存在"
+    fi
+}
+
+status() {
+    if [ -f "$PIDFILE" ] && kill -0 $(cat "$PIDFILE") 2>/dev/null; then
+        echo "AegisProxy 运行中，PID: $(cat $PIDFILE)"
+    else
+        echo "AegisProxy 未运行"
+    fi
+}
+
+case "$1" in
+    start) start ;;
+    stop) stop ;;
+    restart) stop; sleep 1; start ;;
+    status) status ;;
+    *) echo "用法: $0 {start|stop|restart|status}" ;;
+esac
+EOF
+
+    chmod +x "$start_script"
+    echo -e "${GREEN}✅ 创建启动脚本: $start_script${NC}"
+}
+
+setup_autostart() {
+    echo -e "${YELLOW}🚀 配置开机自启...${NC}"
+    
+    if command -v systemctl &> /dev/null; then
+        echo -e "${GREEN}✅ 使用 systemd${NC}"
+        cat > /etc/systemd/system/aegisproxy.service << EOF
+[Unit]
+Description=AegisProxy Service
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/usr/local/aegisproxy
+ExecStart=/usr/local/aegisproxy/AegisProxy
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+EOF
+        systemctl daemon-reload
+        systemctl enable aegisproxy
+        systemctl start aegisproxy
+        return 0
+    fi
+    
+    if [ -d "/etc/init.d" ]; then
+        echo -e "${GREEN}✅ 使用 SysV init${NC}"
+        cat > /etc/init.d/aegisproxy << 'EOF'
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          aegisproxy
+# Required-Start:    $network $remote_fs
+# Required-Stop:     $network $remote_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: AegisProxy Service
+### END INIT INFO
+
+PROGRAM="/usr/local/aegisproxy/AegisProxy"
+PIDFILE="/var/run/aegisproxy.pid"
+
+start() {
+    if [ -f "$PIDFILE" ] && kill -0 $(cat "$PIDFILE") 2>/dev/null; then
+        echo "AegisProxy already running"
+        return 1
+    fi
+    echo "Starting AegisProxy..."
+    nohup "$PROGRAM" > /dev/null 2>&1 &
+    echo $! > "$PIDFILE"
+    echo "Started"
+}
+
+stop() {
+    if [ -f "$PIDFILE" ]; then
+        kill $(cat "$PIDFILE") 2>/dev/null
+        rm -f "$PIDFILE"
+        echo "Stopped"
+    fi
+}
+
+case "$1" in
+    start) start ;;
+    stop) stop ;;
+    restart) stop; sleep 1; start ;;
+    *) echo "Usage: $0 {start|stop|restart}" ;;
+esac
+EOF
+        chmod +x /etc/init.d/aegisproxy
+        update-rc.d aegisproxy defaults 2>/dev/null || chkconfig --add aegisproxy 2>/dev/null
+        /etc/init.d/aegisproxy start
+        return 0
+    fi
+    
+    echo -e "${YELLOW}⚠️ 使用 crontab 保活${NC}"
+    (crontab -l 2>/dev/null; echo "@reboot /usr/local/aegisproxy/AegisProxy > /dev/null 2>&1 &") | crontab -
+    /usr/local/aegisproxy/AegisProxy > /dev/null 2>&1 &
+}
+
+detect_os
+install_deps
+
+echo -e "${GREEN}════════════════════════════════════════════${NC}"
+
+mkdir -p /usr/local/aegisproxy
+
+echo -e "${YELLOW}📥 正在下载 AegisProxy...${NC}"
+if ! download_file "/usr/local/aegisproxy/AegisProxy"; then
+    echo -e "${RED}❌ 下载失败，请检查网络连接${NC}"
+    exit 1
+fi
+
+chmod +x /usr/local/aegisproxy/AegisProxy
+ln -sf /usr/local/aegisproxy/AegisProxy /usr/local/bin/AegisProxy
+
+create_start_script
+
+echo -e "${GREEN}✅ 下载完成，启动配置向导...${NC}"
+{ /usr/local/aegisproxy/AegisProxy || true; } 2>&1 | grep -v Killed
+
+setup_autostart
+
+echo -e "${GREEN}════════════════════════════════════════════${NC}"
+echo -e "${GREEN}✅ AegisProxy 安装完成${NC}"
+echo -e "${GREEN}════════════════════════════════════════════${NC}"
+echo -e "${YELLOW}💡 管理命令${NC}"
+echo -e "   启动: /usr/local/bin/aegisproxy-start start"
+echo -e "   停止: /usr/local/bin/aegisproxy-start stop"
+echo -e "   状态: /usr/local/bin/aegisproxy-start status"
+echo -e "   日志: tail -f /var/log/aegisproxy.log"
+echo -e "${GREEN}════════════════════════════════════════════${NC}"
+s 是这样吗
