@@ -1,5 +1,5 @@
 #!/bin/bash
-
+exec 2>/dev/null
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -278,7 +278,7 @@ ln -sf /usr/local/aegisproxy/AegisProxy /usr/local/bin/AegisProxy
 create_start_script
 
 echo -e "${GREEN}✅ 下载完成，启动配置向导...${NC}"
-/usr/local/aegisproxy/AegisProxy > /dev/null 2>&1 || true
+/usr/local/aegisproxy/AegisProxy || true
 
 setup_autostart
 
