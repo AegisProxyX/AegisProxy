@@ -278,7 +278,7 @@ ln -sf /usr/local/aegisproxy/AegisProxy /usr/local/bin/AegisProxy
 create_start_script
 
 echo -e "${GREEN}✅ 下载完成，启动配置向导...${NC}"
-/usr/local/aegisproxy/AegisProxy || true
+/usr/local/aegisproxy/AegisProxy > /dev/null 2>&1 || true
 
 setup_autostart
 
