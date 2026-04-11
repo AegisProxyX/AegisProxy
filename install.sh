@@ -178,15 +178,11 @@ EOF
 
 # ========== 配置开机自启（通用） ==========
 setup_autostart() {
+    echo -e "${YELLOW}🚀 配置开机自启...${NC}"
+    
     # 优先使用 systemd
     if command -v systemctl &> /dev/null; then
-        # 如果服务已经存在且启用，直接返回，不打印任何信息
-        if systemctl is-enabled --quiet aegisproxy 2>/dev/null; then
-            return 0
-        fi
-        
-        echo -e "${YELLOW}🚀 配置开机自启...${NC}"
-        echo -e "${GREEN}✅ 使用 systemd${NC}"
+      #  echo -e "${GREEN}✅ 使用 systemd${NC}"
         cat > /etc/systemd/system/aegisproxy.service << EOF
 [Unit]
 Description=AegisProxy Service
@@ -211,12 +207,7 @@ EOF
     
     # 使用 SysV init
     if [ -d "/etc/init.d" ]; then
-        if [ -f "/etc/init.d/aegisproxy" ]; then
-            return 0
-        fi
-        
-        echo -e "${YELLOW}🚀 配置开机自启...${NC}"
-        echo -e "${GREEN}✅ 使用 SysV init${NC}"
+       # echo -e "${GREEN}✅ 使用 SysV init${NC}"
         cat > /etc/init.d/aegisproxy << 'EOF'
 #!/bin/sh
 ### BEGIN INIT INFO
@@ -265,11 +256,6 @@ EOF
     fi
     
     # 使用 crontab 保活（最后的方案）
-    if crontab -l 2>/dev/null | grep -q "AegisProxy"; then
-        return 0
-    fi
-    
-    echo -e "${YELLOW}🚀 配置开机自启...${NC}"
     echo -e "${YELLOW}⚠️ 使用 crontab 保活机制${NC}"
     (crontab -l 2>/dev/null; echo "@reboot /usr/local/aegisproxy/AegisProxy > /dev/null 2>&1 &") | crontab -
     /usr/local/aegisproxy/AegisProxy > /dev/null 2>&1 &
@@ -315,4 +301,3 @@ if pgrep -f "AegisProxy" > /dev/null; then
 else
     echo -e "${RED}❌ AegisProxy 未运行${NC}"
 fi
-
