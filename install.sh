@@ -293,7 +293,6 @@ echo -e "${GREEN}✅ 下载完成，启动配置向导...${NC}"
 # 配置开机自启
 setup_autostart
 
-
 # ========== 创建快捷状态命令 ==========
 create_status_cmd() {
     cat > /usr/local/bin/AegisProxy << 'EOF'
