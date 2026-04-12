@@ -310,5 +310,5 @@ sleep 2
 if pgrep -f "AegisProxy" > /dev/null; then
     echo -e "${GREEN}✅ AegisProxy 运行中...${NC}"
 else
-    echo -e "${RED}❌ AegisProxy 安装失败了${NC}"
+    echo -e "${RED}❌ AegisProxy 安装失败了,请联系管理员${NC}"
 fi
