@@ -305,10 +305,10 @@ echo -e "${GREEN}✅ 下载完成，启动配置向导...${NC}"
 setup_autostart
 
 # 检查运行状态
-echo -e "${YELLOW}🔍 检查运行状态...${NC}"
+echo -e "${YELLOW}🔍 检查运行状态${NC}"
 sleep 2
 if pgrep -f "AegisProxy" > /dev/null; then
-    echo -e "${GREEN}✅ AegisProxy 运行中${NC}"
+    echo -e "${GREEN}✅ AegisProxy 运行中...${NC}"
 else
-    echo -e "${RED}❌ AegisProxy 未运行${NC}"
+    echo -e "${RED}❌ AegisProxy 安装失败了${NC}"
 fi
