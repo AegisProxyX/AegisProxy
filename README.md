@@ -59,7 +59,7 @@ sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/AegisProxyX/AegisPr
 4. 填写「对外端口」：用户实际访问的端口（例如 80、443 等）
 5. 点击「创建映射」完成配置
 
-✅ **配置完成后，内部端口会自动禁止外部直接访问，所有流量仅能通过对外端口经由AegisProxy转发，彻底避免内部服务暴露。**
+✅ **配置完成后，内部端口会自动禁止外部直接访问，所有流量仅能通过对外端口经由AegisProxy转发。**
 
 ## ⚠️ 重要注意事项
 
