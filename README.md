@@ -32,7 +32,7 @@
 ### 一键安装
 在终端执行以下命令即可完成系统安装：
 ```bash
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/AegisProxyX/AegisProxy/main/install.sh)"
+sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/AegisProxyX/AegisProxy/main/install.sh)"
 ```
 
 安装过程根据提示操作：
