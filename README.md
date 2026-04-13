@@ -1,4 +1,4 @@
-## 🛡️ AegisProxy - 智能域名防护系统
+## 🛡️ AegisProxy - 域名防拦截系统
 
 **AegisProxy** 是一款自研发的域名防拦截系统。
 
