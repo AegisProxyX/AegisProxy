@@ -43,7 +43,7 @@ sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/AegisProxyX/AegisPr
 ### 一键卸载
 如需完全移除系统，执行以下命令：
 ```bash
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/AegisProxyX/AegisProxy/main/uninstall.sh)"
+sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/AegisProxyX/AegisProxy/main/uninstall.sh)"
 ```
 
 ### 初始配置
