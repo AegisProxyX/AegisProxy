@@ -14,6 +14,8 @@ echo -e "${GREEN}═════════════════════
 # ========== 检测是否为 root ==========
 if [ "$EUID" -ne 0 ]; then 
     echo -e "${RED}❌ 请使用 root 用户执行本安装脚本！${NC}"
+    echo -e "${YELLOW}💡 执行命令: sudo su - root${NC}"
+    echo -e "${GREEN}✅ 然后重新运行安装命令${NC}"
     exit 1
 fi
 
