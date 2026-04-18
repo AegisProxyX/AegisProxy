@@ -28,7 +28,7 @@
 - 硬件配置：最低1核1G内存，建议2核2G及以上配置
 - 网络环境：服务器需具备公网IP，且相关端口未被运营商封禁
 
-### 一键安装
+### 一键安装命令：
 在终端执行以下命令即可完成系统安装：
 ```bash
 sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/AegisProxyX/AegisProxy/main/install.sh)"
@@ -39,7 +39,7 @@ sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/AegisProxyX/AegisPr
 2. 输入后台端口（直接回车则自动随机生成）
 3. 输入后台路径（直接回车则自动随机生成）
 
-### 一键卸载
+### 一键卸载命令：
 如需完全移除系统，执行以下命令：
 ```bash
 sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/AegisProxyX/AegisProxy/main/uninstall.sh)"
