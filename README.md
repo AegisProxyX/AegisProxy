@@ -33,7 +33,7 @@
 ```bash
 sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/AegisProxyX/AegisProxy/main/install.sh)"
 ```
-
+## 或
 ### 一键卸载命令：
 如需完全移除系统，执行以下命令：
 ```bash
