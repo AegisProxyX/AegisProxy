@@ -33,12 +33,7 @@
 ```bash
 sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/AegisProxyX/AegisProxy/main/install.sh)"
 ```
-### 安装过程根据提示操作：
-1. 输入激活码（联系官方获取）
-2. 输入后台端口（直接回车则自动随机生成）
-3. 输入后台路径（直接回车则自动随机生成）
 
-4. 
 ### 一键卸载命令：
 如需完全移除系统，执行以下命令：
 ```bash
