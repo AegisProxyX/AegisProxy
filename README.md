@@ -47,18 +47,17 @@ sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/AegisProxyX/AegisPr
 ### 初始配置
 
 #### 第一步：登录后台
-![AegisProxy展示图](https://raw.githubusercontent.com/AegisProxyX/AegisProxy/main/仪表盘.jpg)
 安装完成后，终端会显示后台访问地址，在浏览器中打开该地址，使用激活码登录管理面板。
+![AegisProxy展示图](https://raw.githubusercontent.com/AegisProxyX/AegisProxy/main/仪表盘.jpg)
 
 #### 第二步：配置端口映射（必填）
-![端口映射配置示例](https://raw.githubusercontent.com/AegisProxyX/AegisProxy/main/%E7%AB%AF%E5%8F%A3%E6%98%A0%E5%B0%84.jpg)
 端口映射是实现防护的核心配置，操作步骤如下：
 1. 点击左侧菜单栏「端口映射」进入端口管理页面
 2. 点击「创建映射」按钮开始添加规则
 3. 填写「内部端口」：您的网站或服务实际运行的端口（例如 8000、3000 等）
 4. 填写「对外端口」：用户实际访问的端口（例如 80、443 等）
 5. 点击「创建映射」完成配置
-
+![端口映射配置示例](https://raw.githubusercontent.com/AegisProxyX/AegisProxy/main/%E7%AB%AF%E5%8F%A3%E6%98%A0%E5%B0%84.jpg)
 ✅ **配置完成后，内部端口会自动禁止外部直接访问，所有流量仅能通过对外端口经由AegisProxy转发。**
 
 ## ⚠️ 重要注意事项
