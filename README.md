@@ -85,7 +85,7 @@ sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/AegisProxyX/AegisPr
 | AegisProxy（对外端口） | `80` | ❌ 端口被内部服务占用，代理服务启动失败 |
 
 #### 核心原则
-**内部服务端口与AegisProxy对外端口必须不同，建议内部服务使用1024以上的非常规端口，对外端口使用80/443等标准Web端口。**
+**内部服务端口与AegisProxy对外端口必须不同，建议内部服务使用1024以上的非常规端口，对外端口使用80/443等标准Web端口/或任意端口。**
 
 ## ❓ 常见问题
 
