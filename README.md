@@ -1,5 +1,4 @@
 ## 🛡️ AegisProxy 是一款自研发的域名防拦截系统。
-![AegisProxy展示图](https://raw.githubusercontent.com/AegisProxyX/AegisProxy/main/主页.jpg)
 
 ## ✨ 核心特性
 
@@ -48,9 +47,11 @@ sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/AegisProxyX/AegisPr
 ### 初始配置
 
 #### 第一步：登录后台
+![AegisProxy展示图](https://raw.githubusercontent.com/AegisProxyX/AegisProxy/main/仪表盘.jpg)
 安装完成后，终端会显示后台访问地址，在浏览器中打开该地址，使用激活码登录管理面板。
 
 #### 第二步：配置端口映射（必填）
+![端口映射配置示例](https://raw.githubusercontent.com/AegisProxyX/AegisProxy/main/%E7%AB%AF%E5%8F%A3%E6%98%A0%E5%B0%84.jpg)
 端口映射是实现防护的核心配置，操作步骤如下：
 1. 点击左侧菜单栏「端口映射」进入端口管理页面
 2. 点击「创建映射」按钮开始添加规则
