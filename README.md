@@ -1,5 +1,5 @@
 ## 🛡️ AegisProxy 是一款自研发的域名防拦截系统。
-
+![AegisProxy展示图](https://raw.githubusercontent.com/AegisProxyX/AegisProxy/main/主页.jpg)
 
 ## ✨ 核心特性
 
