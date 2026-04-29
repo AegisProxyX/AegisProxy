@@ -17,6 +17,7 @@ systemctl daemon-reload
 # 删除主程序和配置目录
 rm -f /usr/local/aegisproxy/AegisProxy
 
+
 # 删除软链接
 rm -f /usr/local/bin/AegisProxy 2>/dev/null
 
