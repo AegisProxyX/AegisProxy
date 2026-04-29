@@ -15,10 +15,9 @@ rm /etc/systemd/system/aegisproxy.service 2>/dev/null
 systemctl daemon-reload
 
 # 删除主程序和配置目录
-rm -rf /usr/local/aegisproxy 2>/dev/null
+rm -f /usr/local/aegisproxy/AegisProxy /usr/local/aegisproxy/config/setup.json
 
 # 删除软链接
-
-rm -f /usr/local/aegisproxy/AegisProxy /usr/local/aegisproxy/config/setup.json 2>/dev/null
+rm -f /usr/local/bin/AegisProxy 2>/dev/null
 
 echo -e "${GREEN}✅ 卸载完成${NC}"
