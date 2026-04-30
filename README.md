@@ -67,7 +67,7 @@ sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/AegisProxyX/AegisPr
 ## ⚠️ 重要注意事项
 
 ### 端口配置规范
- 🚨 **内部端口与AegisProxy对外端口必须不同，否则会导致端口冲突，造成服务无法正常访问！**
+ 🚨 **内部端口与AegisProxy对外端口不能相同，否则会导致端口冲突，造成服务无法正常访问！**
 
 #### 冲突原因
 每个网络端口同一时间只能被一个程序占用，若内部服务端口与AegisProxy对外端口设置为同一端口，两个程序会产生端口抢占，最终导致两者均无法正常运行。
