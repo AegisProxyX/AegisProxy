@@ -75,7 +75,7 @@ sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/AegisProxyX/AegisPr
 #### 正确配置示例 ✅
 | 角色 | 端口 | 说明 |
 |------|------|------|
-| 内部服务（网站/应用） | `8000` | 服务实际监听的本地端口，不对外暴露 |
+| 内部服务（网站/应用） | `8000` | 网站实际运行的本地端口 |
 | AegisProxy（对外端口） | `80` | 用户访问的公开端口，由AegisProxy监听 |
 
 #### 错误配置示例 ❌
